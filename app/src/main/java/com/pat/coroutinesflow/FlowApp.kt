@@ -15,7 +15,6 @@ class FlowApp:Application() {
     private fun startKoin()
     {
        startKoin {
-           androidLogger()
            androidContext(this@FlowApp)
            modules(modules)
        }
