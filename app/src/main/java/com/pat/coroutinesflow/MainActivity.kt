@@ -2,11 +2,10 @@ package com.pat.coroutinesflow
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
-import com.pat.coroutinesflow.MainViewModel.Action.ClickButton
+import com.pat.coroutinesflow.Action.ToastButton
 import com.pat.coroutinesflow.databinding.ActivityMainBinding
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import org.koin.android.viewmodel.ext.android.viewModel
@@ -20,17 +19,23 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        lifecycleScope.launch { subscribeUI() }
-
     }
 
-    private fun subscribeUI()
-    {
+    override fun onStart() {
+        super.onStart()
 
-         binding.button.clicks().map {
-             ClickButton
-         }.onEach { viewModel.action.trySend(it) }
-            .launchIn(lifecycleScope)
+        lifecycleScope.launch {
+            viewModel.mainState.showToast.receiveAsFlow().collect {
+                Toast.makeText(applicationContext, "Toast!", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        subscribeUI()
+    }
+
+    private fun subscribeUI() {
+        binding.toastButton.clicks().map {
+            viewModel.action.trySend(ToastButton)
+        }.launchIn(lifecycleScope)
     }
 }

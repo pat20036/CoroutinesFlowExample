@@ -1,33 +1,30 @@
 package com.pat.coroutinesflow
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.pat.coroutinesflow.MainViewModel.Action.ClickButton
+import com.pat.coroutinesflow.Action.ToastButton
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
-class MainViewModel : ViewModel() {
+class MainViewModel(val mainState: MainState) : ViewModel() {
 
     val action = Channel<Action>()
 
     init {
         viewModelScope.launch {
             action.receiveAsFlow().collect {
-                when(it)
-                {
-                    ClickButton -> {
-                        Log.d("www", "dziala")
+                when (it) {
+                    ToastButton -> {
+                        mainState.showToast.trySend(Unit)
                     }
                 }
             }
         }
     }
+}
 
-
-    sealed class Action {
-        object ClickButton : Action()
-    }
+sealed class Action {
+    object ToastButton : Action()
 }
